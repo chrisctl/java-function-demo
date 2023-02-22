@@ -29,3 +29,18 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+    - name: Login to Aqua Registry
+      uses: docker/login-action@v1
+      with:
+        registry: ${{ secrets.REGISTRY_URL }}
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+    - name: Aqua Scan
+      run: |
+        docker run -v ${{ github.workspace }}:/code \
+            registry.aquasec.com/scanner:2022.4 scan \
+            --no-verify \
+            --host ${{ secrets.AQUA_URL }} \
+            --user ${{ secrets.AQUA_SCANNER_USER }} \
+            --password ${{ secrets.AQUA_SCANNER_PASSWORD }} \
+            --code-scan /code
