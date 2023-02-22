@@ -43,4 +43,4 @@ jobs:
             --host ${{ secrets.AQUA_URL }} \
             --user ${{ secrets.AQUA_SCANNER_USER }} \
             --password ${{ secrets.AQUA_SCANNER_PASSWORD }} \
-            --fs-scan /code
+            --code-scan /code
