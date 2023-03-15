@@ -9,10 +9,7 @@
 name: Java CI with Maven
 
 on:
-  push:
-    branches: [ "initial" ]
-  pull_request:
-    branches: [ "initial" ]
+  push
 
 jobs:
   build:
@@ -20,15 +17,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 8
-      uses: actions/setup-java@v3
-      with:
-        java-version: '8'
-        distribution: 'temurin'
-        cache: maven
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
     - name: Login to Aqua Registry
       uses: docker/login-action@v2
       with:
@@ -37,10 +25,12 @@ jobs:
         password: ${{ secrets.REGISTRY_PASSWORD }}
     - name: Aqua Scan
       run: |
-        docker run -v ${{ github.workspace }}:/code \
+        docker pull nginx:latest
+        docker run -v "/var/run/docker.sock":"/var/run/docker.sock" \
             registry.aquasec.com/scanner:2022.4 scan \
             --no-verify \
             --host ${{ secrets.AQUA_URL }} \
             --user ${{ secrets.AQUA_SCANNER_USER }} \
             --password ${{ secrets.AQUA_SCANNER_PASSWORD }} \
-            --code-scan /code
+            --local \
+            nginx:latest
