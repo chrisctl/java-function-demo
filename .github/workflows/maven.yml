@@ -37,10 +37,14 @@ jobs:
         password: ${{ secrets.REGISTRY_PASSWORD }}
     - name: Aqua Scan
       run: |
-        docker run -v ${{ github.workspace }}:/code \
+        docker pull nginx:latest
+        docker run -v ${{ github.workspace }}:/output \
+                   -v "/var/run/docker.sock":"/var/run/docker.sock" \
             registry.aquasec.com/scanner:2022.4 scan \
             --no-verify \
             --host ${{ secrets.AQUA_URL }} \
             --user ${{ secrets.AQUA_SCANNER_USER }} \
             --password ${{ secrets.AQUA_SCANNER_PASSWORD }} \
-            --code-scan /code
+            --html
+            --local \
+            nginx:latest
